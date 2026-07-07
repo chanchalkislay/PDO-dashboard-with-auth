@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="font-semibold text-slate-100 uppercase">Performance Summary Table</h3>
+        <div class="flex gap-2">
+            <button 
+                type="button"
+                onclick="changeUniverse('Industry')"
+                class="px-3 py-1 text-xs rounded border transition {{ 'bg-orange-500 border-orange-400 text-white' if universe == 'Industry' else 'border-slate-700 text-slate-400' }}"
+            >
+                Industry
+            </button>
+            <button 
+                type="button"
+                onclick="changeUniverse('PSU')"
+                class="px-3 py-1 text-xs rounded border transition {{ 'bg-orange-500 border-orange-400 text-white' if universe == 'PSU' else 'border-slate-700 text-slate-400' }}"
+            >
+                PSU Only
+            </button>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left border-collapse">
+            <thead>
+                <tr class="border-b border-slate-800 text-slate-400 font-medium">
+                    <th class="py-3 px-3">OMC</th>
+                    <th class="py-3 px-3 text-right">Outlets</th>
+                    <th class="py-3 px-3 text-right">RO Part %</th>
+                    <th class="py-3 px-3 text-right">CY Vol (KL)</th>
+                    <th class="py-3 px-3 text-right">LY Vol (KL)</th>
+                    <th class="py-3 px-3 text-right">+/- (KL)</th>
+                    <th class="py-3 px-3 text-right">Growth %</th>
+                    <th class="py-3 px-3 text-right">KLPM CY</th>
+                    <th class="py-3 px-3 text-right">Share CY</th>
+                    <th class="py-3 px-3 text-right">Share LY</th>
+                    <th class="py-3 px-3 text-right">+/- pp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table %}
+                <tr class="border-b border-slate-800/50 hover:bg-slate-800/20">
+                    <td class="py-2.5 px-3 font-semibold text-slate-300">{{ row.omc }}</td>
+                    <td class="py-2.5 px-3 text-right">{{ row.ros | indian(0) }}</td>
+                    <td class="py-2.5 px-3 text-right">{{ row.ro_part | pct }}</td>
+                    <td class="py-2.5 px-3 text-right">{{ row.cy_vol | indian(1) }}</td>
+                    <td class="py-2.5 px-3 text-right">{{ row.ly_vol | indian(1) }}</td>
+                    <td class="py-2.5 px-3 text-right {{ row.diff_vol | growth_class }}">
+                        {{ row.diff_vol | indian(1) }}
+                    </td>
+                    <td class="py-2.5 px-3 text-right {{ row.gr | growth_class }}">
+                        {{ row.gr | gr }}
+                    </td>
+                    <td class="py-2.5 px-3 text-right">{{ row.klpm_cy | indian(2) }}</td>
+                    <td class="py-2.5 px-3 text-right">{{ row.share_cy | pct }}</td>
+                    <td class="py-2.5 px-3 text-right">{{ row.share_ly | pct }}</td>
+                    <td class="py-2.5 px-3 text-right {{ row.share_ppt | growth_class }}">
+                        {{ row.share_ppt | pp }}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% for row in subtotals %}
+                <tr class="bg-slate-800/40 border-t border-slate-700 font-bold">
+                    <td class="py-3 px-3 text-slate-100">{{ row.omc }} Subtotal</td>
+                    <td class="py-3 px-3 text-right">{{ row.ros | indian(0) }}</td>
+                    <td class="py-3 px-3 text-right">{{ row.ro_part | pct }}</td>
+                    <td class="py-3 px-3 text-right">{{ row.cy_vol | indian(1) }}</td>
+                    <td class="py-3 px-3 text-right">{{ row.ly_vol | indian(1) }}</td>
+                    <td class="py-3 px-3 text-right {{ row.diff_vol | growth_class }}">
+                        {{ row.diff_vol | indian(1) }}
+                    </td>
+                    <td class="py-3 px-3 text-right {{ row.gr | growth_class }}">
+                        {{ row.gr | gr }}
+                    </td>
+                    <td class="py-3 px-3 text-right">{{ row.klpm_cy | indian(2) }}</td>
+                    <td class="py-3 px-3 text-right">{{ row.share_cy | pct }}</td>
+                    <td class="py-3 px-3 text-right">{{ row.share_ly | pct }}</td>
+                    <td class="py-3 px-3 text-right {{ row.share_ppt | growth_class }}">
+                        {{ row.share_ppt | pp }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function changeUniverse(uni) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('universe', uni);
+        window.location.href = url.toString();
+    }
+</script>
+{% endblock %}

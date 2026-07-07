@@ -1,0 +1,20 @@
+# Server config for running behind the Cloudflare proxy (no login, test phase).
+[server]
+headless = true
+address = "0.0.0.0"
+# Behind a reverse proxy these avoid WebSocket/connection issues. XSRF is off
+# only because there are no authenticated/state-changing actions in this app.
+enableCORS = false
+enableXsrfProtection = false
+enableWebsocketCompression = false
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#F47920"
+backgroundColor = "#F8F9FA"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1F2937"
+font = "sans serif"

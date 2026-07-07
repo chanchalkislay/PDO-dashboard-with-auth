@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.db-journal
+*.db-wal
+*.db-shm
+ingest/data/
+.fuse_hidden*
+~$*
+backups/
+*.db.tmp
+tests/__pycache__/
+.pytest_cache/

@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <!-- TA Select -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
+        <label class="block text-sm text-slate-400 mb-2 font-medium">Select Trading Area for Profile</label>
+        <select 
+            id="ta-select"
+            onchange="changeTa(this.value)"
+            class="bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-100 w-full max-w-md"
+        >
+            {% for ta in shared.tas %}
+            <option value="{{ ta.code }}" {{ 'selected' if ta.code == selected_ta }}>{{ ta.code }} — {{ ta.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Data Sections -->
+    <div class="grid grid-cols-3 gap-6">
+        <!-- Left Profile Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg flex flex-col gap-4">
+            <h3 class="font-semibold text-slate-100 uppercase border-b border-slate-800 pb-2">Network Outlets</h3>
+            <table class="w-full text-sm text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-800 text-slate-400 font-medium">
+                        <th class="py-2">OMC</th>
+                        <th class="py-2 text-right">MS</th>
+                        <th class="py-2 text-right">HSD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in networks %}
+                    <tr class="border-b border-slate-800/30 {{ 'font-bold bg-slate-800/40' if row.omc == 'TOTAL' else '' }}">
+                        <td class="py-2 text-slate-300">{{ row.omc }}</td>
+                        <td class="py-2 text-right">{{ row.ms_outlets }}</td>
+                        <td class="py-2 text-right">{{ row.hsd_outlets }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3 class="font-semibold text-slate-100 uppercase border-b border-slate-800 pb-2 mt-4">IOCL Share in TA</h3>
+            <div class="grid grid-cols-2 gap-4 text-center">
+                <div class="bg-slate-800/50 p-4 rounded-lg">
+                    <p class="text-xs text-slate-400">MS Share</p>
+                    <p class="text-xl font-bold mt-1 text-orange-400">
+                        {{ shares.MS.share_cy | pct }}
+                    </p>
+                    <p class="text-xs mt-1 {{ shares.MS.share_ppt | growth_class }}">
+                        {{ shares.MS.share_ppt | pp }} pp
+                    </p>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg">
+                    <p class="text-xs text-slate-400">HSD Share</p>
+                    <p class="text-xl font-bold mt-1 text-cyan-400">
+                        {{ shares.HSD.share_cy | pct }}
+                    </p>
+                    <p class="text-xs mt-1 {{ shares.HSD.share_ppt | growth_class }}">
+                        {{ shares.HSD.share_ppt | pp }} pp
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right PPT Table -->
+        <div class="col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg flex flex-col">
+            <h3 class="font-semibold text-slate-100 uppercase border-b border-slate-800 pb-2 mb-4">
+                Trading Area Outlets Volume & Shares (PPT Grid)
+            </h3>
+            <div class="max-h-[500px] overflow-y-auto pr-2">
+                <table class="w-full text-xs text-left border-collapse whitespace-nowrap">
+                    <thead class="sticky top-0 bg-slate-900 z-10">
+                        <tr class="border-b border-slate-800 text-slate-400 font-medium">
+                            <th class="py-2 pr-4">RO Name</th>
+                            <th class="py-2 px-3">OMC</th>
+                            <th class="py-2 px-3 text-right">MS CY</th>
+                            <th class="py-2 px-3 text-right">MS LY</th>
+                            <th class="py-2 px-3 text-right">HSD CY</th>
+                            <th class="py-2 px-3 text-right">HSD LY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in grid %}
+                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/20">
+                            <td class="py-2 pr-4 font-semibold text-slate-300 max-w-xs truncate">{{ row.ro }}</td>
+                            <td class="py-2 px-3 font-semibold text-slate-400">{{ row.omc }}</td>
+                            <td class="py-2 px-3 text-right">{{ row.ms_cy | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ row.ms_ly | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ row.hs_cy | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ row.hs_ly | indian(1) }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="bg-slate-800 font-bold border-t-2 border-slate-700 sticky bottom-0">
+                            <td class="py-2 pr-4 text-slate-100" colspan="2">TA Total</td>
+                            <td class="py-2 px-3 text-right">{{ grid_totals.ms_cy | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ grid_totals.ms_ly | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ grid_totals.hs_cy | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ grid_totals.hs_ly | indian(1) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeTa(taCode) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('ta_code', taCode);
+        window.location.href = url.toString();
+    }
+</script>
+{% endblock %}

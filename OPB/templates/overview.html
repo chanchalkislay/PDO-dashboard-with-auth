@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-5 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+            <h3 class="text-xs text-slate-400 uppercase tracking-wide">IOCL Vol (KL)</h3>
+            <p class="text-2xl font-bold mt-2">{{ kpis.iocl_vol_cy | indian(0) }}</p>
+            <p class="text-xs mt-1 {{ kpis.iocl_gr | growth_class }}">
+                {{ kpis.iocl_gr | gr }} vs LY
+            </p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+            <h3 class="text-xs text-slate-400 uppercase tracking-wide">IOCL Share %</h3>
+            <p class="text-2xl font-bold mt-2">{{ kpis.iocl_share_cy | pct }}</p>
+            <p class="text-xs mt-1 {{ kpis.iocl_share_ppt | growth_class }}">
+                {{ kpis.iocl_share_ppt | pp }} pp
+            </p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+            <h3 class="text-xs text-slate-400 uppercase tracking-wide">Denominator Share %</h3>
+            <p class="text-2xl font-bold mt-2">{{ kpis.iocl_psu_share_cy | pct }}</p>
+            <p class="text-xs mt-1 {{ kpis.iocl_psu_share_ppt | growth_class }}">
+                {{ kpis.iocl_psu_share_ppt | pp }} pp
+            </p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+            <h3 class="text-xs text-slate-400 uppercase tracking-wide">KLPM (KL/mo/RO)</h3>
+            <p class="text-2xl font-bold mt-2">{{ kpis.iocl_klpm_cy | indian(2) }}</p>
+            <p class="text-xs mt-1 {{ kpis.iocl_klpm_diff | growth_class }}">
+                {{ kpis.iocl_klpm_diff | pp }} vs LY
+            </p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+            <h3 class="text-xs text-slate-400 uppercase tracking-wide">Outlets</h3>
+            <p class="text-2xl font-bold mt-2">{{ kpis.iocl_outlets | indian }}</p>
+        </div>
+    </div>
+
+    <!-- Chart and Table -->
+    <div class="grid grid-cols-3 gap-6">
+        <div class="col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-slate-100 uppercase">OMC Breakdown</h3>
+                <div class="flex gap-2">
+                    <button 
+                        type="button"
+                        onclick="changeUniverse('Industry')"
+                        class="px-3 py-1 text-xs rounded border transition {{ 'bg-orange-500 border-orange-400 text-white' if universe == 'Industry' else 'border-slate-700 text-slate-400' }}"
+                    >
+                        Industry
+                    </button>
+                    <button 
+                        type="button"
+                        onclick="changeUniverse('PSU')"
+                        class="px-3 py-1 text-xs rounded border transition {{ 'bg-orange-500 border-orange-400 text-white' if universe == 'PSU' else 'border-slate-700 text-slate-400' }}"
+                    >
+                        PSU Only
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400 font-medium">
+                            <th class="py-2 px-3">OMC</th>
+                            <th class="py-2 px-3 text-right">CY Vol (KL)</th>
+                            <th class="py-2 px-3 text-right">LY Vol (KL)</th>
+                            <th class="py-2 px-3 text-right">Growth %</th>
+                            <th class="py-2 px-3 text-right">Share %</th>
+                            <th class="py-2 px-3 text-right">+/- pp</th>
+                            <th class="py-2 px-3 text-right">PPT CY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in table %}
+                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/20">
+                            <td class="py-2 px-3 font-semibold text-slate-300">{{ row.omc }}</td>
+                            <td class="py-2 px-3 text-right">{{ row.cy_vol | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ row.ly_vol | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right {{ row.growth | growth_class }}">
+                                {{ row.growth | gr }}
+                            </td>
+                            <td class="py-2 px-3 text-right">{{ row.share | pct }}</td>
+                            <td class="py-2 px-3 text-right {{ row.ppt | growth_class }}">
+                                {{ row.ppt | pp }}
+                            </td>
+                            <td class="py-2 px-3 text-right">{{ row.ppt_cy | indian(1) }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="bg-slate-800/40 border-t-2 border-slate-700 font-bold">
+                            <td class="py-2 px-3 text-slate-100">Total</td>
+                            <td class="py-2 px-3 text-right">{{ totals.cy_vol | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right">{{ totals.ly_vol | indian(1) }}</td>
+                            <td class="py-2 px-3 text-right {{ totals.growth | growth_class }}">
+                                {{ totals.growth | gr }}
+                            </td>
+                            <td class="py-2 px-3 text-right">—</td>
+                            <td class="py-2 px-3 text-right">—</td>
+                            <td class="py-2 px-3 text-right">{{ totals.ppt_cy | indian(1) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg flex flex-col">
+            <h3 class="font-semibold text-slate-100 uppercase mb-4">Market Share Chart</h3>
+            <div class="flex-1 relative h-64">
+                <canvas id="overview-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeUniverse(uni) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('universe', uni);
+        window.location.href = url.toString();
+    }
+
+    // Chart.js render from Jinja2 injected lists
+    const labels = [{% for r in table %}"{{ r.omc }}",{% endfor %}];
+    const shares = [{% for r in table %}{{ r.share or 0 }},{% endfor %}];
+    const colors = [{% for r in table %}"{{ omc_colors[r.omc] or '#888' }}",{% endfor %}];
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById("overview-chart").getContext("2d");
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Market Share %',
+                    data: shares,
+                    backgroundColor: colors,
+                    borderWidth: 0,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94a3b8' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

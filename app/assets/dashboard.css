@@ -1,0 +1,174 @@
+/* Pune DO Dashboard — adaptive website shell */
+
+:root {
+  --iocl-orange: #F47920;
+  --iocl-orange-dark: #D96510;
+  --bg-page: #F8F9FA;
+  --bg-card: #FFFFFF;
+  --text-primary: #1F2937;
+  --text-muted: #6B7280;
+  --border-light: #E5E7EB;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Main content area */
+.block-container {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  max-width: 1400px;
+}
+
+/* Page header */
+.pdo-page-header {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid var(--iocl-orange);
+}
+
+.pdo-breadcrumb {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+}
+
+.pdo-page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Filter chips */
+.pdo-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.pdo-chip {
+  display: inline-block;
+  background: #FFF3E8;
+  color: var(--iocl-orange-dark);
+  border: 1px solid #FDDCC4;
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* KPI cards — target Streamlit's own metric container directly.
+   Wrapping st.metric with st.markdown div tags does not work (they render
+   as siblings, not parent→child).  Style the native element instead. */
+[data-testid="stMetric"] {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-top: 3px solid var(--iocl-orange);
+  border-radius: 8px;
+  padding: 0.75rem 1rem 0.6rem;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-testid="stMetricLabel"] {
+  font-size: 0.78rem !important;
+  color: var(--text-muted) !important;
+}
+
+[data-testid="stMetricValue"] {
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+/* Section cards for complex tabs */
+.pdo-section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* TA Profile horizontal scroll wrapper */
+.pdo-ta-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  margin: 0.5rem 0 1rem;
+}
+
+.pdo-ta-scroll table {
+  min-width: 900px;
+}
+
+/* Sidebar polish */
+section[data-testid="stSidebar"] {
+  background: #FAFBFC;
+}
+
+section[data-testid="stSidebar"] .stMarkdown h5 {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Dataframe tables */
+[data-testid="stDataFrame"] {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Navigation sidebar links */
+[data-testid="stSidebarNav"] {
+  padding-top: 0.5rem;
+}
+
+[data-testid="stSidebarNav"] a {
+  font-size: 0.9rem;
+}
+
+/* Collapsible nav section headers */
+[data-testid="stNavSectionHeader"] {
+  cursor: pointer;
+  user-select: none;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+[data-testid="stNavSectionHeader"]:hover {
+  background: rgba(244, 121, 32, 0.08);
+}
+
+[data-testid="stNavSectionHeader"] [data-testid="stIconMaterial"] {
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .block-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .pdo-page-title {
+    font-size: 1.35rem;
+  }
+
+  [data-testid="stMetric"] {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Hide default Streamlit deploy button branding in header */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }

@@ -1,0 +1,226 @@
+<svg viewBox="0 0 840 1620" xmlns="http://www.w3.org/2000/svg" role="img" font-family="system-ui,sans-serif" font-size="11">
+  <title>PDO Data Ingestion Algorithm v2</title>
+  <desc>Updated flowchart including auto-detect district column and branded fuel split path</desc>
+
+  <defs>
+    <marker id="a"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#555"/></marker>
+    <marker id="ag" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#27ae60"/></marker>
+    <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#c0392b"/></marker>
+    <marker id="at" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#16a085"/></marker>
+    <marker id="ab" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#2980b9"/></marker>
+  </defs>
+
+  <rect width="840" height="1620" fill="#f8f9fa"/>
+
+  <!-- PHASE RAILS -->
+  <rect x="8" y="56"   width="13" height="246" rx="3" fill="#2980b9" opacity=".3"/>
+  <text x="14" y="179" font-size="8" fill="#1a5276" font-weight="700" text-anchor="middle" transform="rotate(-90,14,179)">PARSE</text>
+
+  <rect x="8" y="318"  width="13" height="120" rx="3" fill="#16a085" opacity=".3"/>
+  <text x="14" y="378" font-size="8" fill="#0e6655" font-weight="700" text-anchor="middle" transform="rotate(-90,14,378)">FILTER · SPLIT</text>
+
+  <rect x="8" y="454"  width="13" height="256" rx="3" fill="#8e44ad" opacity=".3"/>
+  <text x="14" y="582" font-size="8" fill="#6c3483" font-weight="700" text-anchor="middle" transform="rotate(-90,14,582)">CODE MATCH</text>
+
+  <rect x="8" y="726"  width="13" height="108" rx="3" fill="#d35400" opacity=".3"/>
+  <text x="14" y="780" font-size="8" fill="#a04000" font-weight="700" text-anchor="middle" transform="rotate(-90,14,780)">RESOLVE</text>
+
+  <rect x="8" y="850"  width="13" height="188" rx="3" fill="#27ae60" opacity=".3"/>
+  <text x="14" y="944" font-size="8" fill="#1d8348" font-weight="700" text-anchor="middle" transform="rotate(-90,14,944)">VALIDATE · INSERT</text>
+
+  <rect x="8" y="1054" width="13" height="176" rx="3" fill="#2c3e50" opacity=".3"/>
+  <text x="14" y="1142" font-size="8" fill="#2c3e50" font-weight="700" text-anchor="middle" transform="rotate(-90,14,1142)">WRITE · PUSH</text>
+
+  <!-- START -->
+  <ellipse cx="370" cy="30" rx="148" ry="22" fill="#2c3e50"/>
+  <text x="370" y="35" text-anchor="middle" fill="white" font-weight="700" font-size="11">START — OMC Excel File Received</text>
+  <line x1="370" y1="52" x2="370" y2="64" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S1 Detect OMC -->
+  <rect x="224" y="66" width="292" height="46" rx="5" fill="#2980b9"/>
+  <text x="370" y="85" text-anchor="middle" fill="white" font-weight="700">STEP 1 · Detect OMC from Filename</text>
+  <text x="370" y="102" text-anchor="middle" fill="#d6eaf8">Scan filename → IOCL / BPCL / HPCL / NEL / RBML / SIMPL</text>
+  <line x1="370" y1="112" x2="370" y2="124" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S2 Detect Format -->
+  <rect x="224" y="126" width="292" height="46" rx="5" fill="#2980b9"/>
+  <text x="370" y="145" text-anchor="middle" fill="white" font-weight="700">STEP 2 · Detect File Format</text>
+  <text x="370" y="162" text-anchor="middle" fill="#d6eaf8">SAP Dump · Industry Sharing · 5-col Custom</text>
+  <line x1="370" y1="172" x2="370" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S3 Auto-detect district column — NEW -->
+  <rect x="224" y="186" width="292" height="70" rx="5" fill="#1a6fa8" stroke="#f39c12" stroke-width="2"/>
+  <text x="370" y="206" text-anchor="middle" fill="#f9e79f" font-weight="700">★ STEP 3 · Auto-Detect District Column</text>
+  <text x="370" y="222" text-anchor="middle" fill="#d6eaf8">Scan every column for Maharashtra district names</text>
+  <text x="370" y="237" text-anchor="middle" fill="#d6eaf8">Pick col with highest match count as district_col</text>
+  <text x="370" y="252" text-anchor="middle" fill="#aed6f1">→ Works with any file size (state-wide or DO-specific)</text>
+  <line x1="370" y1="256" x2="370" y2="268" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S4 Extract Normalize -->
+  <rect x="224" y="270" width="292" height="46" rx="5" fill="#2980b9"/>
+  <text x="370" y="289" text-anchor="middle" fill="white" font-weight="700">STEP 4 · Extract &amp; Normalize Rows</text>
+  <text x="370" y="306" text-anchor="middle" fill="#d6eaf8">SAP code · RO name · District · MS · HSD · Branded vols</text>
+  <line x1="370" y1="316" x2="370" y2="328" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S5 Filter -->
+  <rect x="224" y="330" width="292" height="46" rx="5" fill="#16a085"/>
+  <text x="370" y="349" text-anchor="middle" fill="white" font-weight="700">STEP 5 · Filter to Coverage Districts</text>
+  <text x="370" y="366" text-anchor="middle" fill="#d1f2eb">Keep only: Pune · Ahmednagar · Satara   (COVERAGE_DISTRICTS config)</text>
+  <line x1="370" y1="376" x2="370" y2="388" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S6 Split branded -->
+  <rect x="224" y="390" width="292" height="52" rx="5" fill="#16a085"/>
+  <text x="370" y="410" text-anchor="middle" fill="white" font-weight="700">STEP 6 · Split: Mother vs Branded</text>
+  <text x="370" y="426" text-anchor="middle" fill="#d1f2eb">MS / HSD  →  Mother track  (fact_monthly)</text>
+  <text x="370" y="440" text-anchor="middle" fill="#d1f2eb">Speed+ / Power / XP95 / XG  →  Branded track</text>
+
+  <!-- Branded branch arrow RIGHT -->
+  <line x1="516" y1="416" x2="572" y2="416" stroke="#16a085" stroke-width="1.5" marker-end="url(#at)"/>
+  <text x="543" y="410" text-anchor="middle" fill="#0e6655" font-size="9" font-weight="700">BRANDED</text>
+
+  <!-- Branded track boxes -->
+  <rect x="574" y="398" width="190" height="36" rx="5" fill="#d1f2eb" stroke="#16a085" stroke-width="1.5"/>
+  <text x="669" y="413" text-anchor="middle" fill="#0e6655" font-weight="700">Same SAP Matching</text>
+  <text x="669" y="427" text-anchor="middle" fill="#0e6655" font-size="9">(canonical → legacy → resolve)</text>
+  <line x1="669" y1="434" x2="669" y2="450" stroke="#16a085" stroke-width="1.5" marker-end="url(#at)"/>
+  <rect x="574" y="452" width="190" height="36" rx="5" fill="#d1f2eb" stroke="#16a085" stroke-width="1.5"/>
+  <text x="669" y="468" text-anchor="middle" fill="#0e6655" font-weight="700">INSERT fact_branded_monthly</text>
+  <text x="669" y="482" text-anchor="middle" fill="#0e6655" font-size="9">sap_code · brand · product · volume_kl</text>
+
+  <!-- Branded merges into Write step -->
+  <line x1="669" y1="488" x2="669" y2="1080" stroke="#16a085" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="669" y1="1080" x2="516" y2="1080" stroke="#16a085" stroke-width="1.2" marker-end="url(#at)"/>
+
+  <!-- Main track continues from S6 -->
+  <line x1="370" y1="442" x2="370" y2="456" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S7 Build lookup -->
+  <rect x="224" y="458" width="292" height="46" rx="5" fill="#8e44ad"/>
+  <text x="370" y="477" text-anchor="middle" fill="white" font-weight="700">STEP 7 · Build dim_ro Code Lookup</text>
+  <text x="370" y="494" text-anchor="middle" fill="#e8daef">Canonical set · Legacy map (legacy_sap_codes field)</text>
+  <line x1="370" y1="504" x2="370" y2="518" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- Diamond 1: Canonical match -->
+  <polygon points="370,522 510,554 370,586 230,554" fill="#8e44ad" opacity=".85"/>
+  <text x="370" y="549" text-anchor="middle" fill="white" font-weight="700">In canonical</text>
+  <text x="370" y="564" text-anchor="middle" fill="white" font-weight="700">sap_code set?</text>
+  <line x1="510" y1="554" x2="560" y2="554" stroke="#27ae60" stroke-width="1.5" marker-end="url(#ag)"/>
+  <text x="533" y="547" fill="#27ae60" font-size="9" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="562" y="534" width="130" height="40" rx="4" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="627" y="551" text-anchor="middle" fill="#1d8348" font-weight="700">Direct Match ✓</text>
+  <text x="627" y="565" text-anchor="middle" fill="#1d8348" font-size="9">Use sap_code as-is</text>
+  <line x1="627" y1="574" x2="627" y2="870" stroke="#27ae60" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="627" y1="870" x2="516" y2="870" stroke="#27ae60" stroke-width="1.2" marker-end="url(#ag)"/>
+  <line x1="370" y1="586" x2="370" y2="600" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="382" y="596" fill="#c0392b" font-size="9" font-weight="700">NO</text>
+
+  <!-- Diamond 2: Legacy map -->
+  <polygon points="370,604 510,636 370,668 230,636" fill="#8e44ad" opacity=".75"/>
+  <text x="370" y="631" text-anchor="middle" fill="white" font-weight="700">In legacy</text>
+  <text x="370" y="646" text-anchor="middle" fill="white" font-weight="700">map?</text>
+  <line x1="510" y1="636" x2="560" y2="636" stroke="#27ae60" stroke-width="1.5" marker-end="url(#ag)"/>
+  <text x="533" y="629" fill="#27ae60" font-size="9" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="562" y="616" width="130" height="40" rx="4" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="627" y="633" text-anchor="middle" fill="#1d8348" font-weight="700">Remap ✓</text>
+  <text x="627" y="647" text-anchor="middle" fill="#1d8348" font-size="9">old_code → canonical</text>
+  <line x1="370" y1="668" x2="370" y2="682" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="382" y="678" fill="#c0392b" font-size="9" font-weight="700">NO</text>
+
+  <!-- Diamond 3: Volume = 0 -->
+  <polygon points="370,686 510,714 370,742 230,714" fill="#c0392b" opacity=".8"/>
+  <text x="370" y="709" text-anchor="middle" fill="white" font-weight="700">Volume</text>
+  <text x="370" y="724" text-anchor="middle" fill="white" font-weight="700">= 0 ?</text>
+  <line x1="510" y1="714" x2="560" y2="714" stroke="#7f8c8d" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="533" y="707" fill="#7f8c8d" font-size="9" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="562" y="696" width="130" height="36" rx="4" fill="#f2f3f4" stroke="#bdc3c7" stroke-width="1.5"/>
+  <text x="627" y="713" text-anchor="middle" fill="#7f8c8d" font-weight="700">Skip (zero vol)</text>
+  <text x="627" y="726" text-anchor="middle" fill="#95a5a6" font-size="9">Safe to ignore</text>
+  <line x1="370" y1="742" x2="370" y2="754" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="382" y="750" fill="#c0392b" font-size="9" font-weight="700">NO</text>
+
+  <!-- Resolve box -->
+  <rect x="224" y="756" width="292" height="76" rx="5" fill="#fadbd8" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="370" y="774" text-anchor="middle" fill="#922b21" font-weight="700">STEP 8 · Investigate &amp; Resolve Unmatched</text>
+  <text x="370" y="790" text-anchor="middle" fill="#922b21">New commissioning?  →  INSERT into dim_ro</text>
+  <text x="370" y="806" text-anchor="middle" fill="#922b21">Code change / Adhoc?  →  Legacy remap</text>
+  <text x="370" y="820" text-anchor="middle" fill="#922b21">UPDATE dim_ro + all historical fact_monthly</text>
+  <line x1="370" y1="832" x2="370" y2="846" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S9 Cross-validate -->
+  <rect x="224" y="848" width="292" height="66" rx="5" fill="#27ae60" stroke="#1d8348" stroke-width="2"/>
+  <text x="370" y="868" text-anchor="middle" fill="white" font-weight="700">STEP 9 · Cross-Validate Totals</text>
+  <text x="370" y="884" text-anchor="middle" fill="#d5f5e3">Σ file (by district) == Σ rows to-be-inserted</text>
+  <text x="370" y="899" text-anchor="middle" fill="#d5f5e3">SAP Dump Σ == Industry Sharing Σ</text>
+  <text x="370" y="912" text-anchor="middle" fill="#a9dfbf" font-size="9">★ Stop &amp; flag if mismatch before any DB write</text>
+  <line x1="370" y1="914" x2="370" y2="928" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S10 INSERT fact_monthly -->
+  <rect x="224" y="930" width="292" height="66" rx="5" fill="#1d8348"/>
+  <text x="370" y="950" text-anchor="middle" fill="white" font-weight="700">STEP 10 · INSERT into fact_monthly</text>
+  <text x="370" y="966" text-anchor="middle" fill="#a9dfbf">canonical sap_code  ·  ta_code + rsa_code (dim_ro JOIN)</text>
+  <text x="370" y="981" text-anchor="middle" fill="#a9dfbf">fy_code · month_label · month_index · volume_kl</text>
+  <text x="370" y="994" text-anchor="middle" fill="#a9dfbf">INSERT OR IGNORE  ·  non-zero volumes only  ·  ROUND(vol)</text>
+  <line x1="370" y1="996" x2="370" y2="1010" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S11 Integrity + Write -->
+  <rect x="224" y="1012" width="292" height="60" rx="5" fill="#2c3e50"/>
+  <text x="370" y="1031" text-anchor="middle" fill="white" font-weight="700">STEP 11 · Integrity Check + Write to Repo</text>
+  <text x="370" y="1047" text-anchor="middle" fill="#bdc3c7">PRAGMA integrity_check → 'ok'</text>
+  <text x="370" y="1062" text-anchor="middle" fill="#bdc3c7">Binary write → app/pune_do.db</text>
+  <line x1="370" y1="1072" x2="370" y2="1086" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- S12 Commit Push -->
+  <rect x="224" y="1088" width="292" height="60" rx="5" fill="#2c3e50"/>
+  <text x="370" y="1107" text-anchor="middle" fill="white" font-weight="700">STEP 12 · Commit + Push (GitHub Desktop)</text>
+  <text x="370" y="1123" text-anchor="middle" fill="#bdc3c7">Verify branch = main (live app)</text>
+  <text x="370" y="1138" text-anchor="middle" fill="#bdc3c7">Push origin → Streamlit picks up new DB</text>
+  <line x1="370" y1="1148" x2="370" y2="1162" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- More OMCs diamond -->
+  <polygon points="370,1166 500,1196 370,1226 240,1196" fill="#2980b9" opacity=".85"/>
+  <text x="370" y="1191" text-anchor="middle" fill="white" font-weight="700">More OMCs</text>
+  <text x="370" y="1207" text-anchor="middle" fill="white" font-weight="700">this month?</text>
+  <line x1="240" y1="1196" x2="120" y2="1196" stroke="#2980b9" stroke-width="1.5" marker-end="url(#ab)"/>
+  <text x="178" y="1188" fill="#2980b9" font-size="9" font-weight="700" text-anchor="middle">YES</text>
+  <line x1="120" y1="1196" x2="120" y2="180" stroke="#2980b9" stroke-width="1.5"/>
+  <line x1="120" y1="180" x2="222" y2="180" stroke="#2980b9" stroke-width="1.5" marker-end="url(#ab)"/>
+  <text x="75" y="688" text-anchor="middle" fill="#2980b9" font-size="8" font-weight="600" transform="rotate(-90,75,688)">Next OMC</text>
+  <line x1="370" y1="1226" x2="370" y2="1244" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="384" y="1238" fill="#555" font-size="9" font-weight="700">NO</text>
+
+  <!-- END -->
+  <ellipse cx="370" cy="1264" rx="148" ry="22" fill="#2c3e50"/>
+  <text x="370" y="1269" text-anchor="middle" fill="white" font-weight="700">END — Month Complete</text>
+
+  <!-- LEGEND -->
+  <rect x="28" y="1300" width="784" height="300" rx="6" fill="white" stroke="#dee2e6" stroke-width="1"/>
+  <text x="420" y="1322" text-anchor="middle" fill="#2c3e50" font-size="12" font-weight="700">What's New in v2 — Key Changes from Previous Version</text>
+
+  <rect x="48" y="1334" width="10" height="10" rx="2" fill="#f39c12"/>
+  <text x="66" y="1344" fill="#2c3e50">★ STEP 3 (Auto-Detect District Column) — scans every column for MH district names;</text>
+  <text x="66" y="1358" fill="#555">  picks the col with the highest match count. File can now be state-wide; DO filters itself.</text>
+
+  <rect x="48" y="1368" width="10" height="10" rx="2" fill="#16a085"/>
+  <text x="66" y="1378" fill="#2c3e50">★ STEP 6 (Split Mother vs Branded) — branded fuels (Speed+, Power, XP95, XG, Turbojet)</text>
+  <text x="66" y="1392" fill="#555">  route to fact_branded_monthly; Mother MS/HSD totals stay clean.</text>
+
+  <rect x="48" y="1402" width="10" height="10" rx="2" fill="#27ae60"/>
+  <text x="66" y="1412" fill="#2c3e50">★ STEP 9 (Cross-Validate Totals) — hard gate before any DB write; checks district Σ</text>
+  <text x="66" y="1426" fill="#555">  and SAP Dump vs Industry Sharing Σ. Stops if mismatch found.</text>
+
+  <rect x="48" y="1436" width="10" height="10" rx="2" fill="#1d8348"/>
+  <text x="66" y="1446" fill="#2c3e50">★ STEP 10 — ta_code + rsa_code now joined from dim_ro at insert time + ROUND(volume_kl)</text>
+  <text x="66" y="1460" fill="#555">  Fixes the bug where IOCL volumes were invisible in TA-level dashboard views.</text>
+
+  <rect x="468" y="1334" width="324" height="116" rx="5" fill="#eaf0fb" stroke="#2980b9" stroke-width="1"/>
+  <text x="630" y="1352" text-anchor="middle" fill="#1a5276" font-weight="700">COVERAGE_DISTRICTS — Central Config</text>
+  <text x="488" y="1372" fill="#2c3e50" font-family="monospace" font-size="10">COVERAGE_DISTRICTS = {</text>
+  <text x="488" y="1387" fill="#2c3e50" font-family="monospace" font-size="10">  "Pune", "Ahmednagar", "Satara"</text>
+  <text x="488" y="1402" fill="#2c3e50" font-family="monospace" font-size="10">}</text>
+  <text x="488" y="1420" fill="#555" font-size="9">Defined once in config.py → imported by</text>
+  <text x="488" y="1434" fill="#555" font-size="9">parsers, pipeline, and app. Add a district</text>
+  <text x="488" y="1448" fill="#555" font-size="9">here → whole app adapts automatically.</text>
+
+  <text x="48" y="1490" fill="#7f8c8d" font-size="9">Unchanged from v1: OMC detection · 3-tier SAP matching · new-RO dim_ro insert · legacy remap with historical update · integrity check → binary write</text>
+  <text x="48" y="1505" fill="#7f8c8d" font-size="9">Generated: 1 July 2026 · Session: Claude Sonnet 4.6 → handoff to Claude Sonnet 5</text>
+</svg>
